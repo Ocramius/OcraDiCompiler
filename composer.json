@@ -1,0 +1,28 @@
+{
+    "name": "ocramius/ocra-di-compiler",
+    "description": "Zend Framework 2 Module that compiles Zend\\Di definitions to speed up ZF2 applications",
+    "type": "library",
+    "license": "MIT",
+    "keywords": [
+        "Dependency Injection Container",
+        "DIC",
+        "zf2"
+    ],
+    "homepage": "https://github.com/Ocramius/OcraDiCompiler",
+    "authors": [
+        {
+            "name": "Marco Pivetta",
+            "email": "ocramius@gmail.com",
+            "homepage": "http://marco-pivetta.com/"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.3",
+        "zendframework/zendframework": ">=2.0.0beta4"
+    },
+    "autoload": {
+        "psr-0": {
+            "OcraDiCompiler": "src"
+        }
+    }
+}
