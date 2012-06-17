@@ -19,15 +19,16 @@
 namespace OcraDiCompiler;
 
 use Zend\ModuleManager\Feature\BootstrapListenerInterface;
-use Zend\ModuleManager\Feature\ServiceProviderInterface;
 use Zend\ModuleManager\Feature\AutoloaderProviderInterface;
+use Zend\ModuleManager\Feature\ConfigProviderInterface;
 use Zend\EventManager\Event;
 use Zend\Loader\StandardAutoloader;
 
 use Zend\Di\Di;
+use Zend\ServiceManager\ServiceLocatorInterface;
+use Zend\ServiceManager\ServiceManager;
 
-use OcraDiCompiler\Dumper;
-use OcraDiCompiler\Generator\DiProxyGenerator;
+use OcraDiCompiler\Service\CompiledDiFactory;
 
 /**
  * Module that overrides Di factory with a compiled Di factory. That allows great performance improvements.
@@ -37,38 +38,23 @@ use OcraDiCompiler\Generator\DiProxyGenerator;
  * @author Marco Pivetta <ocramius@gmail.com>
  * @license MIT
  */
-class Module implements BootstrapListenerInterface, ServiceProviderInterface, AutoloaderProviderInterface
+class Module implements BootstrapListenerInterface, AutoloaderProviderInterface, ConfigProviderInterface
 {
     /**
      * {@inheritDoc}
      */
     public function onBootstrap(Event $e)
     {
-        // @todo replace Di factory and return early
-
         /* @var $application \Zend\Mvc\ApplicationInterface */
         $application = $e->getTarget();
+        /* @var $sm \Zend\ServiceManager\ServiceManager */
         $sm = $application->getServiceManager();
-        if ($sm->has('Di')) {
-            $di = $sm->get('Di');
 
-            if (!$di instanceof Di) {
-                // @todo throw?
-                return;
-            }
-
-            $this->compileDi($di);
+        if (!$sm instanceof ServiceManager) {
+            return;
         }
-    }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getServiceConfiguration()
-    {
-        return array(
-            // @todo custom factory for Di
-        );
+        $this->overrideDiFactory($sm);
     }
 
     /**
@@ -86,15 +72,21 @@ class Module implements BootstrapListenerInterface, ServiceProviderInterface, Au
     }
 
     /**
-     * Writes Di definitions to a file
-     *
-     * @param Di $di
+     * {@inheritDoc}
      */
-    protected function compileDi(Di $di)
+    public function getConfig()
     {
-        $generator = new DiProxyGenerator(new Dumper($di));
-        $fileGenerator = $generator->compile();
-        $fileGenerator->setFilename('data/CompiledDi.php');
-        $fileGenerator->write();
+        return include __DIR__ . '/../../config/module.config.php';
+    }
+
+    /**
+     * @param ServiceManager $sm
+     */
+    protected function overrideDiFactory(ServiceManager $sm)
+    {
+        $allowOverride = $sm->getAllowOverride();
+        $sm->setAllowOverride(true);
+        $sm->setFactory('DependencyInjector', new CompiledDiFactory());
+        $sm->setAllowOverride($allowOverride);
     }
 }

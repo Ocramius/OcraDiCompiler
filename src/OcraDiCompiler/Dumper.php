@@ -89,7 +89,6 @@ class Dumper
         $visited = array();
 
         foreach ($names as $name) {
-            //var_dump(array(__METHOD__ . ':' . __LINE__ => $name));
             $this->doGetInjectedDefinitions($name, $visited);
         }
 
