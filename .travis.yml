@@ -1,0 +1,18 @@
+language: php
+
+php:
+  - 5.3
+  - 5.4
+
+before_script:
+  - cd ..
+  - git clone git://github.com/zendframework/ZendSkeletonApplication.git
+  - cd ZendSkeletonApplication
+  - rm config/application.config.php && cp ../OcraDiCompiler/.travis/application.config.php config/
+  - php composer.phar install
+  - rm -rf vendor/ocramius/ocra-di-compiler
+  - cp -r ../OcraDiCompiler vendor/ocramius/ocra-di-compiler
+
+script:
+  - cd vendor/doctrine/DoctrineORMModule/tests
+  - phpunit

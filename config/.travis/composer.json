@@ -1,0 +1,6 @@
+{
+    "require": {
+        "ocramius/ocra-di-compiler": "dev-master",
+        "zendframework/zendframework": "dev-master"
+    }
+}
