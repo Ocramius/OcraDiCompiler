@@ -1,0 +1,11 @@
+<phpunit
+    bootstrap="./Bootstrap.php"
+    colors="true"
+    backupGlobals="false"
+>
+    <testsuites>
+        <testsuite name="OcraDiCompiler Test Suite">
+            <directory>./</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>
