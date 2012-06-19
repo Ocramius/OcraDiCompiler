@@ -66,12 +66,13 @@ class Dumper
     {
         $im = $this->di->instanceManager();
         $classes = $im->getClasses();
+        $definedClasses = $this->di->definitions()->getClasses();
         $aliases = array_keys($im->getAliases());
-        return array_unique(array_merge($classes, $aliases));
+        return array_unique(array_merge($classes, $aliases, $definedClasses));
     }
 
     /**
-     * @return array
+     * @return GeneratorInstance[]
      */
     public function getAllInjectedDefinitions()
     {
