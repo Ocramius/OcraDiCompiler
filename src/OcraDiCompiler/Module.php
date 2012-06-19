@@ -19,7 +19,6 @@
 namespace OcraDiCompiler;
 
 use Zend\ModuleManager\Feature\BootstrapListenerInterface;
-use Zend\ModuleManager\Feature\AutoloaderProviderInterface;
 use Zend\ModuleManager\Feature\ConfigProviderInterface;
 use Zend\EventManager\Event;
 use Zend\Loader\StandardAutoloader;
@@ -38,7 +37,7 @@ use OcraDiCompiler\Service\CompiledDiFactory;
  * @author Marco Pivetta <ocramius@gmail.com>
  * @license MIT
  */
-class Module implements BootstrapListenerInterface, AutoloaderProviderInterface, ConfigProviderInterface
+class Module implements BootstrapListenerInterface, ConfigProviderInterface
 {
     /**
      * {@inheritDoc}
@@ -55,20 +54,6 @@ class Module implements BootstrapListenerInterface, AutoloaderProviderInterface,
         }
 
         $this->overrideDiFactory($sm);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getAutoloaderConfig()
-    {
-        return array(
-            'Zend\Loader\StandardAutoloader' => array(
-                StandardAutoloader::LOAD_NS => array(
-                    __NAMESPACE__ => __DIR__,
-                ),
-            ),
-        );
     }
 
     /**

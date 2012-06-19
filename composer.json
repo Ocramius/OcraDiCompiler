@@ -22,7 +22,8 @@
     },
     "autoload": {
         "psr-0": {
-            "OcraDiCompiler": "src"
+            "OcraDiCompiler": "src",
+            "OcraDiCompilerTest": "tests"
         }
     }
 }
