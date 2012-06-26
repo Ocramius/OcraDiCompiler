@@ -8,6 +8,8 @@ before_script:
   - cd ..
   - git clone git://github.com/zendframework/ZendSkeletonApplication.git
   - cd ZendSkeletonApplication
+  - rm composer.json
+  - cp ../OcraDiCompiler/.travis/composer.json ./
   - rm config/application.config.php
   - cp ../OcraDiCompiler/.travis/application.config.php config/
   - php composer.phar install
