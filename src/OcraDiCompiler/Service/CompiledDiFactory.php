@@ -20,14 +20,18 @@ namespace OcraDiCompiler\Service;
 
 use Zend\Di\Configuration as DiConfiguration;
 use Zend\Di\Di;
+use Zend\Di\Definition\ArrayDefinition;
 use Zend\ServiceManager\Di\DiAbstractServiceFactory;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\ServiceManager\ServiceManager;
 use Zend\Mvc\Service\DiFactory;
 
 use OcraDiCompiler\Dumper;
+use OcraDiCompiler\Definition\ClassListCompilerDefinition;
 use OcraDiCompiler\Generator\DiProxyGenerator;
 use OcraDiCompiler\Exception\InvalidArgumentException;
+
+use Zend\Code\Generator\FileGenerator;
 
 /**
  * Factory that is responsible for generating a compiled Di if none found and otherwise
@@ -49,15 +53,18 @@ class CompiledDiFactory extends DiFactory
         $config = $serviceLocator->get('Configuration');
 
         // must use file_exists because of possible exceptions have to be shown
+        // @todo remove this disk access if possible
         if (!file_exists($config['ocra_di_compiler']['compiled_di_filename'])) {
             $di = parent::createService($serviceLocator);
             $this->compileDi($di, $config);
+            $di->definitions()->addDefinition($this->getDiDefinitions($di, $config), false);
             return $di;
         }
 
         include_once $config['ocra_di_compiler']['compiled_di_filename'];
         $className =  $config['ocra_di_compiler']['compiled_di_namespace'] . '\\'
             . $config['ocra_di_compiler']['compiled_di_classname'];
+
         /* @var $di Di */
         $di = new $className();
 
@@ -70,6 +77,7 @@ class CompiledDiFactory extends DiFactory
     protected function configureDi(Di $di, $config) {
         if (isset($config['di'])) {
             $di->configure(new DiConfiguration($config['di']));
+            $di->definitions()->addDefinition($this->getDiDefinitions($di, $config), false);
         }
     }
 
@@ -80,6 +88,24 @@ class CompiledDiFactory extends DiFactory
 
         /* @var $sl ServiceManager */
         $sl->addAbstractFactory(new DiAbstractServiceFactory($di, DiAbstractServiceFactory::USE_SL_BEFORE_DI));
+    }
+
+    protected function getDiDefinitions(Di $di, $config) {
+        if ($arrayDefinitions = @include $config['ocra_di_compiler']['compiled_di_definitions_filename']) {
+            return new ArrayDefinition($arrayDefinitions);
+        }
+
+        $dumper = new Dumper($di);
+        $definitionsCompiler = new ClassListCompilerDefinition();
+        $definitionsCompiler->addClassesToProcess($dumper->getAllClasses());
+        $definitionsCompiler->compile();
+        $arrayDefinitions = $definitionsCompiler->toArrayDefinition();
+        $fileGenerator = new FileGenerator();
+        $fileGenerator->setFilename($config['ocra_di_compiler']['compiled_di_definitions_filename']);
+
+        $fileGenerator->setBody('return ' . var_export($arrayDefinitions->toArray(), true) . ';');
+        $fileGenerator->write();
+        return $arrayDefinitions;
     }
 
     protected function compileDi(Di $di, $config) {

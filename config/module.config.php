@@ -7,5 +7,7 @@ return array(
         'compiled_di_namespace' => 'OcraDiCompiler\\__GC__',
         // Filename where the compiled code will be written
         'compiled_di_filename' => 'data/CompiledDi.php',
+        // Filename where the compiled Di definitions will be written
+        'compiled_di_definitions_filename' => 'data/compiled_di_definitions.php',
     ),
 );
