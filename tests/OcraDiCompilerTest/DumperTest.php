@@ -1,4 +1,20 @@
 <?php
+/*
+* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+* "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+* LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+* A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+* OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+* SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+* LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+* DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+* THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+* (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+* OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*
+* This software consists of voluntary contributions made by many individuals
+* and is licensed under the MIT license.
+*/
 
 namespace OcraDiCompilerTest;
 
@@ -100,6 +116,17 @@ final class DumperTest extends BaseTest
     }
 
     /**
+     * Verifies that simple instance classes can be discovered
+     */
+    public function testGetClassesForDumperTestDummyDependency()
+    {
+        $name = 'b';
+        $classes = $this->getDumper()->getClasses($name);
+        $this->assertCount(1, $classes);
+        $this->assertSame(__NAMESPACE__ . '\DumperTestDummyDependency', $classes[0]);
+    }
+
+    /**
      * Verifies that instances with dependencies can be fetched, and that dependencies will be dumped too
      */
     public function testGetInjectedDefinitionsForDumperTestDummyInstance()
@@ -110,6 +137,19 @@ final class DumperTest extends BaseTest
         $this->assertSame($name, $dumpedInstances[$name]->getName());
         $this->assertSame(__NAMESPACE__ . '\DumperTestDummyInstance', $dumpedInstances[$name]->getClass());
         $this->assertArrayHasKey(__NAMESPACE__ . '\DumperTestDummyDependency', $dumpedInstances);
+    }
+
+    /**
+     * Verifies that classes can be discovered for instances with dependencies
+     */
+    public function testGetClassesForDumperTestDummyInstance()
+    {
+        $name = 'a';
+        $classes = $this->getDumper()->getClasses($name);
+        $this->assertCount(2, $classes);
+        $classes = array_flip($classes);
+        $this->assertArrayHasKey(__NAMESPACE__ . '\DumperTestDummyInstance', $classes);
+        $this->assertArrayHasKey(__NAMESPACE__ . '\DumperTestDummyDependency', $classes);
     }
 
     /**
@@ -127,6 +167,19 @@ final class DumperTest extends BaseTest
     }
 
     /**
+     * Verifies that classes can be discovered for instances with dependencies (defined through Di definitions)
+     */
+    public function testGetClassesForDumperDumperTestDummyInstanceWithDefinitions()
+    {
+        $name = __NAMESPACE__ . '\DumperTestDummyInstanceWithDefinitions';
+        $classes = $this->getDumper()->getClasses($name);
+        $this->assertCount(2, $classes);
+        $classes = array_flip($classes);
+        $this->assertArrayHasKey(__NAMESPACE__ . '\DumperTestDummyInstanceWithDefinitions', $classes);
+        $this->assertArrayHasKey(__NAMESPACE__ . '\DumperTestDummyDependencyFromDefinitions', $classes);
+    }
+
+    /**
      * Verifies that all defined instances and definitions will be fetched with all their dependencies
      */
     public function testGetAllInjectedDefinitions()
@@ -138,6 +191,20 @@ final class DumperTest extends BaseTest
         $this->assertArrayHasKey(__NAMESPACE__ . '\DumperTestDummyDependency', $dumpedInstances);
         $this->assertArrayHasKey(__NAMESPACE__ . '\DumperTestDummyInstanceWithDefinitions', $dumpedInstances);
         $this->assertArrayHasKey(__NAMESPACE__ . '\DumperTestDummyDependencyFromDefinitions', $dumpedInstances);
+    }
+
+    /**
+     * Verifies that classes can be discovered for instances with dependencies (defined through Di definitions)
+     */
+    public function testGetAllClasses()
+    {
+        $classes = $this->getDumper()->getAllClasses();
+        $this->assertCount(4, $classes);
+        $classes = array_flip($classes);
+        $this->assertArrayHasKey(__NAMESPACE__ . '\DumperTestDummyInstance', $classes);
+        $this->assertArrayHasKey(__NAMESPACE__ . '\DumperTestDummyDependency', $classes);
+        $this->assertArrayHasKey(__NAMESPACE__ . '\DumperTestDummyInstanceWithDefinitions', $classes);
+        $this->assertArrayHasKey(__NAMESPACE__ . '\DumperTestDummyDependencyFromDefinitions', $classes);
     }
 }
 

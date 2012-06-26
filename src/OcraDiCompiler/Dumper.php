@@ -52,6 +52,8 @@ class Dumper
     }
 
     /**
+     * Retrieves aliases defined for the wrapped Di instance
+     *
      * @return array
      */
     public function getAliases()
@@ -72,6 +74,20 @@ class Dumper
     }
 
     /**
+     * Retrieves all classes that are involved in generating any instances coming from either
+     * aliases or instance parameters or definitions and their dependencies
+     *
+     * @return string[]
+     */
+    public function getAllClasses()
+    {
+        return $this->getClasses($this->getInitialInstanceDefinitions());
+    }
+
+    /**
+     * Retrieves all GeneratorInstances that represent instantiation of any instances coming from either
+     * aliases or instance parameters or definitions and their dependencies
+     *
      * @return GeneratorInstance[]
      */
     public function getAllInjectedDefinitions()
@@ -80,8 +96,34 @@ class Dumper
     }
 
     /**
-     * @param string|array $name name or names of the instances to get
+     * Retrieves all classes that are involved in generating an instance for $name and its dependencies
      *
+     * @param  array|string $name
+     * @return string[]
+     */
+    public function getClasses($name)
+    {
+        $classes = array();
+        $instanceDefinitions = $this->getInjectedDefinitions($name);
+
+        foreach ($instanceDefinitions as $instanceDefinition) {
+            if ($instanceDefinition->getClass()) {
+                $classes[$instanceDefinition->getClass()] = true;
+                continue;
+            }
+
+            $alias = $this->di->instanceManager()->getClassFromAlias($instanceDefinition->getName());
+            $classes[$alias] = true;
+        }
+
+        return array_keys($classes);
+    }
+
+
+    /**
+     * Retrieves all GeneratorInstances that represent instantiation of an instance for $name and its dependencies
+     *
+     * @param  string|array $name name or names of the instances to get
      * @return GeneratorInstance[] all definitions discovered recursively
      */
     public function getInjectedDefinitions($name)
@@ -97,8 +139,10 @@ class Dumper
     }
 
     /**
+     * Recursively looks for discovered dependencies
+     *
      * @param string $name of the instances to get
-     * @param array $visited the array where discovered instance definitions will be stored
+     * @param array  $visited the array where discovered instance definitions will be stored
      */
     protected function doGetInjectedDefinitions($name, array &$visited)
     {
@@ -112,6 +156,18 @@ class Dumper
             if ($param instanceof GeneratorInstance) {
                 /* @var $param GeneratorInstance */
                 $this->doGetInjectedDefinitions($param->getName(), $visited);
+            }
+        }
+
+        foreach ($visited[$name]->getMethods() as $method) {
+            if (isset($method['params']) && is_array($method['params'])) {
+                foreach ($method['params'] as $param) {
+                    /* @var $param GeneratorInstance */
+                    if ($param instanceof GeneratorInstance) {
+                        /* @var $param GeneratorInstance */
+                        $this->doGetInjectedDefinitions($param->getName(), $visited);
+                    }
+                }
             }
         }
     }
