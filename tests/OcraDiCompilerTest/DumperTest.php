@@ -44,17 +44,17 @@ final class DumperTest extends BaseTest
         $this->diConfigurationArray = array(
             'instance' => array(
                 'alias' => array(
-                    'a' => __NAMESPACE__ . '\DumperTestDummyInstance',
-                    'b' => __NAMESPACE__ . '\DumperTestDummyDependency',
+                    'a' => __NAMESPACE__ . '\TestAsset\DumperTestDummyInstance',
+                    'b' => __NAMESPACE__ . '\TestAsset\DumperTestDummyDependency',
                 ),
             ),
             'definition' => array(
                 'class' => array(
-                    __NAMESPACE__ . '\DumperTestDummyInstanceWithDefinitions' => array(
+                    __NAMESPACE__ . '\TestAsset\DumperTestDummyInstanceWithDefinitions' => array(
                         'methods' => array(
                             '__construct' => array(
                                 'something' => array(
-                                    'type' => __NAMESPACE__ . '\DumperTestDummyDependencyFromDefinitions',
+                                    'type' => __NAMESPACE__ . '\TestAsset\DumperTestDummyDependencyFromDefinitions',
                                     'required' => true,
                                 ),
                             ),
@@ -86,7 +86,7 @@ final class DumperTest extends BaseTest
         $this->assertCount(3, $initialDefinitions);
         $this->assertContains('a', $initialDefinitions);
         $this->assertContains('b', $initialDefinitions);
-        $this->assertContains(__NAMESPACE__ . '\DumperTestDummyInstanceWithDefinitions', $initialDefinitions);
+        $this->assertContains(__NAMESPACE__ . '\TestAsset\DumperTestDummyInstanceWithDefinitions', $initialDefinitions);
     }
 
     /**
@@ -96,8 +96,8 @@ final class DumperTest extends BaseTest
     {
         $this->assertSame(
             array(
-                'a' => __NAMESPACE__ . '\DumperTestDummyInstance',
-                'b' => __NAMESPACE__ . '\DumperTestDummyDependency',
+                'a' => __NAMESPACE__ . '\TestAsset\DumperTestDummyInstance',
+                'b' => __NAMESPACE__ . '\TestAsset\DumperTestDummyDependency',
             ),
             $this->getDumper()->getAliases()
         );
@@ -112,7 +112,7 @@ final class DumperTest extends BaseTest
         $dumpedInstances = $this->getDumper()->getInjectedDefinitions($name);
         $this->assertCount(1, $dumpedInstances);
         $this->assertSame($name, $dumpedInstances[$name]->getName());
-        $this->assertSame(__NAMESPACE__ . '\DumperTestDummyDependency', $dumpedInstances[$name]->getClass());
+        $this->assertSame(__NAMESPACE__ . '\TestAsset\DumperTestDummyDependency', $dumpedInstances[$name]->getClass());
     }
 
     /**
@@ -123,7 +123,7 @@ final class DumperTest extends BaseTest
         $name = 'b';
         $classes = $this->getDumper()->getClasses($name);
         $this->assertCount(1, $classes);
-        $this->assertSame(__NAMESPACE__ . '\DumperTestDummyDependency', $classes[0]);
+        $this->assertSame(__NAMESPACE__ . '\TestAsset\DumperTestDummyDependency', $classes[0]);
     }
 
     /**
@@ -135,8 +135,8 @@ final class DumperTest extends BaseTest
         $dumpedInstances = $this->getDumper()->getInjectedDefinitions($name);
         $this->assertCount(2, $dumpedInstances);
         $this->assertSame($name, $dumpedInstances[$name]->getName());
-        $this->assertSame(__NAMESPACE__ . '\DumperTestDummyInstance', $dumpedInstances[$name]->getClass());
-        $this->assertArrayHasKey(__NAMESPACE__ . '\DumperTestDummyDependency', $dumpedInstances);
+        $this->assertSame(__NAMESPACE__ . '\TestAsset\DumperTestDummyInstance', $dumpedInstances[$name]->getClass());
+        $this->assertArrayHasKey(__NAMESPACE__ . '\TestAsset\DumperTestDummyDependency', $dumpedInstances);
     }
 
     /**
@@ -148,8 +148,8 @@ final class DumperTest extends BaseTest
         $classes = $this->getDumper()->getClasses($name);
         $this->assertCount(2, $classes);
         $classes = array_flip($classes);
-        $this->assertArrayHasKey(__NAMESPACE__ . '\DumperTestDummyInstance', $classes);
-        $this->assertArrayHasKey(__NAMESPACE__ . '\DumperTestDummyDependency', $classes);
+        $this->assertArrayHasKey(__NAMESPACE__ . '\TestAsset\DumperTestDummyInstance', $classes);
+        $this->assertArrayHasKey(__NAMESPACE__ . '\TestAsset\DumperTestDummyDependency', $classes);
     }
 
     /**
@@ -158,12 +158,12 @@ final class DumperTest extends BaseTest
      */
     public function testGetInjectedDefinitionsForDumperDumperTestDummyInstanceWithDefinitions()
     {
-        $name = __NAMESPACE__ . '\DumperTestDummyInstanceWithDefinitions';
+        $name = __NAMESPACE__ . '\TestAsset\DumperTestDummyInstanceWithDefinitions';
         $dumpedInstances = $this->getDumper()->getInjectedDefinitions($name);
         $this->assertCount(2, $dumpedInstances);
         $this->assertSame($name, $dumpedInstances[$name]->getName());
         $this->assertSame($name, $dumpedInstances[$name]->getClass());
-        $this->assertArrayHasKey(__NAMESPACE__ . '\DumperTestDummyDependencyFromDefinitions', $dumpedInstances);
+        $this->assertArrayHasKey(__NAMESPACE__ . '\TestAsset\DumperTestDummyDependencyFromDefinitions', $dumpedInstances);
     }
 
     /**
@@ -171,12 +171,12 @@ final class DumperTest extends BaseTest
      */
     public function testGetClassesForDumperDumperTestDummyInstanceWithDefinitions()
     {
-        $name = __NAMESPACE__ . '\DumperTestDummyInstanceWithDefinitions';
+        $name = __NAMESPACE__ . '\TestAsset\DumperTestDummyInstanceWithDefinitions';
         $classes = $this->getDumper()->getClasses($name);
         $this->assertCount(2, $classes);
         $classes = array_flip($classes);
-        $this->assertArrayHasKey(__NAMESPACE__ . '\DumperTestDummyInstanceWithDefinitions', $classes);
-        $this->assertArrayHasKey(__NAMESPACE__ . '\DumperTestDummyDependencyFromDefinitions', $classes);
+        $this->assertArrayHasKey(__NAMESPACE__ . '\TestAsset\DumperTestDummyInstanceWithDefinitions', $classes);
+        $this->assertArrayHasKey(__NAMESPACE__ . '\TestAsset\DumperTestDummyDependencyFromDefinitions', $classes);
     }
 
     /**
@@ -188,9 +188,9 @@ final class DumperTest extends BaseTest
         $this->assertCount(5, $dumpedInstances);
         $this->assertArrayHasKey('a', $dumpedInstances);
         $this->assertArrayHasKey('b', $dumpedInstances);
-        $this->assertArrayHasKey(__NAMESPACE__ . '\DumperTestDummyDependency', $dumpedInstances);
-        $this->assertArrayHasKey(__NAMESPACE__ . '\DumperTestDummyInstanceWithDefinitions', $dumpedInstances);
-        $this->assertArrayHasKey(__NAMESPACE__ . '\DumperTestDummyDependencyFromDefinitions', $dumpedInstances);
+        $this->assertArrayHasKey(__NAMESPACE__ . '\TestAsset\DumperTestDummyDependency', $dumpedInstances);
+        $this->assertArrayHasKey(__NAMESPACE__ . '\TestAsset\DumperTestDummyInstanceWithDefinitions', $dumpedInstances);
+        $this->assertArrayHasKey(__NAMESPACE__ . '\TestAsset\DumperTestDummyDependencyFromDefinitions', $dumpedInstances);
     }
 
     /**
@@ -201,44 +201,9 @@ final class DumperTest extends BaseTest
         $classes = $this->getDumper()->getAllClasses();
         $this->assertCount(4, $classes);
         $classes = array_flip($classes);
-        $this->assertArrayHasKey(__NAMESPACE__ . '\DumperTestDummyInstance', $classes);
-        $this->assertArrayHasKey(__NAMESPACE__ . '\DumperTestDummyDependency', $classes);
-        $this->assertArrayHasKey(__NAMESPACE__ . '\DumperTestDummyInstanceWithDefinitions', $classes);
-        $this->assertArrayHasKey(__NAMESPACE__ . '\DumperTestDummyDependencyFromDefinitions', $classes);
+        $this->assertArrayHasKey(__NAMESPACE__ . '\TestAsset\DumperTestDummyInstance', $classes);
+        $this->assertArrayHasKey(__NAMESPACE__ . '\TestAsset\DumperTestDummyDependency', $classes);
+        $this->assertArrayHasKey(__NAMESPACE__ . '\TestAsset\DumperTestDummyInstanceWithDefinitions', $classes);
+        $this->assertArrayHasKey(__NAMESPACE__ . '\TestAsset\DumperTestDummyDependencyFromDefinitions', $classes);
     }
-}
-
-/**
- * Instance to be retrieved (aliases should point at it)
- */
-class DumperTestDummyInstance
-{
-    public function __construct(DumperTestDummyDependency $dependency)
-    {
-    }
-}
-
-/**
- * Instance discovered by Di as a dependency of DumperTestDummyInstance
- */
-class DumperTestDummyDependency
-{
-
-}
-
-/**
- * Instance to be retrieved that has attached definitions
- */
-class DumperTestDummyInstanceWithDefinitions
-{
-    public function __construct($something)
-    {
-    }
-}
-
-/**
- * Instance to be injected into DumperTestDummyInstanceWithDefinitions through its definitions
- */
-class DumperTestDummyDependencyFromDefinitions
-{
 }
