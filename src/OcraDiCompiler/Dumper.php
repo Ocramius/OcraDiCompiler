@@ -21,6 +21,8 @@ namespace OcraDiCompiler;
 use Zend\Di\Di;
 use Zend\Di\ServiceLocator\DependencyInjectorProxy;
 use Zend\Di\ServiceLocator\GeneratorInstance;
+use Zend\Di\Exception\RuntimeException;
+use Zend\Di\Exception\MissingPropertyException;
 use OcraDiCompiler\Exception\InvalidArgumentException;
 
 /**
@@ -150,7 +152,15 @@ class Dumper
             return;
         }
 
-        $visited[$name] = $this->proxy->get($name);
+        try {
+            $visited[$name] = $this->proxy->get($name);
+        } catch (RuntimeException $e) {
+            // usually abstract class or interface that cannot be resolved
+            return;
+        } catch (MissingPropertyException $e) {
+            // usually missing parameters required for a particular instance
+            return;
+        }
 
         foreach ($visited[$name]->getParams() as $param) {
             if ($param instanceof GeneratorInstance) {

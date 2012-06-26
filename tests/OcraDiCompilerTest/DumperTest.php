@@ -163,7 +163,10 @@ final class DumperTest extends BaseTest
         $this->assertCount(2, $dumpedInstances);
         $this->assertSame($name, $dumpedInstances[$name]->getName());
         $this->assertSame($name, $dumpedInstances[$name]->getClass());
-        $this->assertArrayHasKey(__NAMESPACE__ . '\TestAsset\DumperTestDummyDependencyFromDefinitions', $dumpedInstances);
+        $this->assertArrayHasKey(
+            __NAMESPACE__ . '\TestAsset\DumperTestDummyDependencyFromDefinitions',
+            $dumpedInstances
+        );
     }
 
     /**
@@ -190,7 +193,10 @@ final class DumperTest extends BaseTest
         $this->assertArrayHasKey('b', $dumpedInstances);
         $this->assertArrayHasKey(__NAMESPACE__ . '\TestAsset\DumperTestDummyDependency', $dumpedInstances);
         $this->assertArrayHasKey(__NAMESPACE__ . '\TestAsset\DumperTestDummyInstanceWithDefinitions', $dumpedInstances);
-        $this->assertArrayHasKey(__NAMESPACE__ . '\TestAsset\DumperTestDummyDependencyFromDefinitions', $dumpedInstances);
+        $this->assertArrayHasKey(
+            __NAMESPACE__ . '\TestAsset\DumperTestDummyDependencyFromDefinitions',
+            $dumpedInstances
+        );
     }
 
     /**
@@ -205,5 +211,29 @@ final class DumperTest extends BaseTest
         $this->assertArrayHasKey(__NAMESPACE__ . '\TestAsset\DumperTestDummyDependency', $classes);
         $this->assertArrayHasKey(__NAMESPACE__ . '\TestAsset\DumperTestDummyInstanceWithDefinitions', $classes);
         $this->assertArrayHasKey(__NAMESPACE__ . '\TestAsset\DumperTestDummyDependencyFromDefinitions', $classes);
+    }
+
+    /**
+     * Verifies that instances that are instantiable or don't have a preferred instance will be ignored
+     */
+    public function testWillIgnoreNonInstantiableElements()
+    {
+        $di = new Di();
+        $dumper = new Dumper($di);
+        $definitions = $dumper->getInjectedDefinitions('RecursiveIterator');
+        $this->assertCount(0, $definitions);
+    }
+
+    /**
+     * Verifies that instances that cannot be built because of missing parameters in configuration will be ignored
+     */
+    public function testWillIgnoreInstancesWithMissingParameters()
+    {
+        $di = new Di();
+        $dumper = new Dumper($di);
+        $definitions = $dumper->getInjectedDefinitions(
+            __NAMESPACE__ . '\TestAsset\DumperTestDummyInstanceWithDefinitions'
+        );
+        $this->assertCount(0, $definitions);
     }
 }

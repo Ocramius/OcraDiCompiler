@@ -34,13 +34,31 @@ class ClassListCompilerDefinition extends CompilerDefinition
     protected $classesToProcess = array();
 
     /**
+     * Adds an array of classes to be processed
+     *
+     * @param array $classNames
+     */
+    public function addClassesToProcess(array $classNames)
+    {
+        foreach ($classNames as $className) {
+            $this->addClassToProcess($className);
+        }
+    }
+
+    /**
      * Adds a class to the list of classes to be processed
      *
      * @param string $className
+     * @return bool true if the class was added, false if the class does not exist
      */
     public function addClassToProcess($className)
     {
+        if (!class_exists($className)) {
+            return false;
+        }
+
         $this->classesToProcess[(string) $className] = true;
+        return true;
     }
 
     /**

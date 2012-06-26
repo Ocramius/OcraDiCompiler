@@ -37,9 +37,29 @@ final class ClassListCompilerDefinitionTest extends BaseTest
         $this->compilerDefinition = new ClassListCompilerDefinition();
     }
 
+    public function willIgnoreNonExistingClasses()
+    {
+        $this->assertFalse(
+            $this->compilerDefinition->addClassToProcess('this_class_does_not_exist')
+        );
+        $this->compilerDefinition->compile();
+        $this->assertCount(0, $this->compilerDefinition->toArrayDefinition()->toArray());
+    }
+
     public function testCanCompileByClassName()
     {
-        $this->compilerDefinition->addClassToProcess('OcraDiCompilerTest\TestAsset\ExampleEmptyClass');
+        $this->assertTrue(
+            $this->compilerDefinition->addClassToProcess('OcraDiCompilerTest\TestAsset\ExampleEmptyClass')
+        );
+        $this->compilerDefinition->compile();
+        $definition = $this->compilerDefinition->toArrayDefinition()->toArray();
+        $this->assertCount(1, $definition);
+        $this->assertArrayHasKey('OcraDiCompilerTest\TestAsset\ExampleEmptyClass', $definition);
+    }
+
+    public function testCanCompileByClassNames()
+    {
+        $this->compilerDefinition->addClassesToProcess(array('OcraDiCompilerTest\TestAsset\ExampleEmptyClass'));
         $this->compilerDefinition->compile();
         $definition = $this->compilerDefinition->toArrayDefinition()->toArray();
         $this->assertCount(1, $definition);
