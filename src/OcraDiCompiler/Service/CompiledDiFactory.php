@@ -57,7 +57,8 @@ class CompiledDiFactory extends DiFactory
         if (!file_exists($config['ocra_di_compiler']['compiled_di_filename'])) {
             $di = parent::createService($serviceLocator);
             $this->compileDi($di, $config);
-            $di->definitions()->addDefinition($this->getDiDefinitions($di, $config), false);
+            // @todo definitions should be between user defined ones and runtime definitions (also test it)
+            $di->definitions()->addDefinition($this->getDiDefinitions($di, $config), true);
             return $di;
         }
 
@@ -77,7 +78,8 @@ class CompiledDiFactory extends DiFactory
     protected function configureDi(Di $di, $config) {
         if (isset($config['di'])) {
             $di->configure(new DiConfiguration($config['di']));
-            $di->definitions()->addDefinition($this->getDiDefinitions($di, $config), false);
+            // @todo definitions should be between user defined ones and runtime definitions (also test it)
+            $di->definitions()->addDefinition($this->getDiDefinitions($di, $config), true);
         }
     }
 
