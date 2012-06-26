@@ -39,6 +39,8 @@ use Zend\Code\Generator\FileGenerator;
  *
  * @author Marco Pivetta <ocramius@gmail.com>
  * @license MIT
+ *
+ * @todo this file is a mess and must be split into definitions compiler/instance compiler and di factory
  */
 class CompiledDiFactory extends DiFactory
 {
@@ -57,8 +59,7 @@ class CompiledDiFactory extends DiFactory
         if (!file_exists($config['ocra_di_compiler']['compiled_di_filename'])) {
             $di = parent::createService($serviceLocator);
             $this->compileDi($di, $config);
-            // @todo definitions should be between user defined ones and runtime definitions (also test it)
-            $di->definitions()->addDefinition($this->getDiDefinitions($di, $config), true);
+            $this->getDiDefinitions($config, $di); // compiles definitions, doesn't apply them
             return $di;
         }
 
@@ -77,9 +78,13 @@ class CompiledDiFactory extends DiFactory
 
     protected function configureDi(Di $di, $config) {
         if (isset($config['di'])) {
-            $di->configure(new DiConfiguration($config['di']));
-            // @todo definitions should be between user defined ones and runtime definitions (also test it)
-            $di->definitions()->addDefinition($this->getDiDefinitions($di, $config), true);
+            if (!isset($config['di']['compiler'])) {
+                $config['di']['compiler'] = array();
+            }
+
+            $config['di']['compiler'][] = $this->getDiDefinitions($config);
+            $diConfig = new DiConfiguration($config['di']);
+            $diConfig->configure($di);
         }
     }
 
@@ -92,22 +97,31 @@ class CompiledDiFactory extends DiFactory
         $sl->addAbstractFactory(new DiAbstractServiceFactory($di, DiAbstractServiceFactory::USE_SL_BEFORE_DI));
     }
 
-    protected function getDiDefinitions(Di $di, $config) {
+    protected function getDiDefinitions($config, Di $di = null) {
         if ($arrayDefinitions = @include $config['ocra_di_compiler']['compiled_di_definitions_filename']) {
-            return new ArrayDefinition($arrayDefinitions);
+            return $config['ocra_di_compiler']['compiled_di_definitions_filename'];
+        }
+
+        if (!$di) {
+            $di = new Di();
+
+            if (isset($config['di'])) {
+                $diConfig = new DiConfiguration($config['di']);
+                $diConfig->configure($di);
+            }
         }
 
         $dumper = new Dumper($di);
         $definitionsCompiler = new ClassListCompilerDefinition();
         $definitionsCompiler->addClassesToProcess($dumper->getAllClasses());
         $definitionsCompiler->compile();
-        $arrayDefinitions = $definitionsCompiler->toArrayDefinition();
         $fileGenerator = new FileGenerator();
         $fileGenerator->setFilename($config['ocra_di_compiler']['compiled_di_definitions_filename']);
-
-        $fileGenerator->setBody('return ' . var_export($arrayDefinitions->toArray(), true) . ';');
+        $fileGenerator->setBody(
+            'return ' . var_export($definitionsCompiler->toArrayDefinition()->toArray(), true) . ';'
+        );
         $fileGenerator->write();
-        return $arrayDefinitions;
+        return $config['ocra_di_compiler']['compiled_di_definitions_filename'];
     }
 
     protected function compileDi(Di $di, $config) {
