@@ -60,7 +60,7 @@ class CompiledDiFactory extends DiFactory
             $di = parent::createService($serviceLocator);
             $this->compileDi($di, $config);
             $this->getDiDefinitions($config, $di); // compiles definitions, doesn't apply them
-            return $di;
+            return parent::createService($serviceLocator); // need a fresh Di instance, since we polluted this one
         }
 
         include_once $config['ocra_di_compiler']['compiled_di_filename'];
@@ -76,6 +76,10 @@ class CompiledDiFactory extends DiFactory
         return $di;
     }
 
+    /**
+     * @param Di $di
+     * @param $config
+     */
     protected function configureDi(Di $di, $config) {
         if (isset($config['di'])) {
             if (!isset($config['di']['compiler'])) {
@@ -88,15 +92,30 @@ class CompiledDiFactory extends DiFactory
         }
     }
 
+    /**
+     * @param ServiceLocatorInterface $sl
+     * @param Di $di
+     * @return void
+     */
     protected function registerAbstractFactory(ServiceLocatorInterface $sl, Di $di) {
         if (!$sl instanceof ServiceManager) {
             return;
         }
 
         /* @var $sl ServiceManager */
-        $sl->addAbstractFactory(new DiAbstractServiceFactory($di, DiAbstractServiceFactory::USE_SL_BEFORE_DI));
+        $sl->addAbstractFactory(
+            new AbstractWrappedDiServiceFactory(
+                $di,
+                AbstractWrappedDiServiceFactory::USE_SL_BEFORE_DI
+            )
+        );
     }
 
+    /**
+     * @param $config
+     * @param null|Di $di
+     * @return string
+     */
     protected function getDiDefinitions($config, Di $di = null) {
         if ($arrayDefinitions = @include $config['ocra_di_compiler']['compiled_di_definitions_filename']) {
             return $config['ocra_di_compiler']['compiled_di_definitions_filename'];
@@ -124,6 +143,10 @@ class CompiledDiFactory extends DiFactory
         return $config['ocra_di_compiler']['compiled_di_definitions_filename'];
     }
 
+    /**
+     * @param Di $di
+     * @param $config
+     */
     protected function compileDi(Di $di, $config) {
         $generator = new DiProxyGenerator(new Dumper($di));
         $fileGenerator = $generator->compile();

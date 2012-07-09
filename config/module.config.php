@@ -10,4 +10,13 @@ return array(
         // Filename where the compiled Di definitions will be written
         'compiled_di_definitions_filename' => 'data/compiled_di_definitions.php',
     ),
+
+    'service_manager' => array(
+        'factories' => array(
+            'DependencyInjector'      => 'OcraDiCompiler\\Service\\CompiledDiFactory',
+            'ControllerLoader'        => 'OcraDiCompiler\\Service\\Mvc\\ControllerLoaderFactory',
+            'ControllerPluginManager' => 'OcraDiCompiler\\Service\\Mvc\\ControllerPluginManagerFactory',
+            'ViewHelperManager'       => 'OcraDiCompiler\\Service\\Mvc\\ViewHelperManagerFactory',
+        ),
+    ),
 );

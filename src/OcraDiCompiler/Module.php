@@ -18,16 +18,7 @@
 
 namespace OcraDiCompiler;
 
-use Zend\ModuleManager\Feature\BootstrapListenerInterface;
 use Zend\ModuleManager\Feature\ConfigProviderInterface;
-use Zend\EventManager\Event;
-use Zend\Loader\StandardAutoloader;
-
-use Zend\Di\Di;
-use Zend\ServiceManager\ServiceLocatorInterface;
-use Zend\ServiceManager\ServiceManager;
-
-use OcraDiCompiler\Service\CompiledDiFactory;
 
 /**
  * Module that overrides Di factory with a compiled Di factory. That allows great performance improvements.
@@ -37,41 +28,13 @@ use OcraDiCompiler\Service\CompiledDiFactory;
  * @author Marco Pivetta <ocramius@gmail.com>
  * @license MIT
  */
-class Module implements BootstrapListenerInterface, ConfigProviderInterface
+class Module implements ConfigProviderInterface
 {
-    /**
-     * {@inheritDoc}
-     */
-    public function onBootstrap(Event $e)
-    {
-        /* @var $application \Zend\Mvc\ApplicationInterface */
-        $application = $e->getTarget();
-        /* @var $sm \Zend\ServiceManager\ServiceManager */
-        $sm = $application->getServiceManager();
-
-        if (!$sm instanceof ServiceManager) {
-            return;
-        }
-
-        $this->overrideDiFactory($sm);
-    }
-
     /**
      * {@inheritDoc}
      */
     public function getConfig()
     {
         return include __DIR__ . '/../../config/module.config.php';
-    }
-
-    /**
-     * @param ServiceManager $sm
-     */
-    protected function overrideDiFactory(ServiceManager $sm)
-    {
-        $allowOverride = $sm->getAllowOverride();
-        $sm->setAllowOverride(true);
-        $sm->setFactory('DependencyInjector', new CompiledDiFactory());
-        $sm->setAllowOverride($allowOverride);
     }
 }
