@@ -57,10 +57,9 @@ class CompiledDiFactory extends DiFactory
         // must use file_exists because of possible exceptions have to be shown
         // @todo remove this disk access if possible
         if (!file_exists($config['ocra_di_compiler']['compiled_di_filename'])) {
-            $di = parent::createService($serviceLocator);
+            $di = $this->createDi($config);
             $this->compileDi($di, $config);
             $this->getDiDefinitions($config, $di); // compiles definitions, doesn't apply them
-            return parent::createService($serviceLocator); // need a fresh Di instance, since we polluted this one
         }
 
         include_once $config['ocra_di_compiler']['compiled_di_filename'];
@@ -72,6 +71,21 @@ class CompiledDiFactory extends DiFactory
 
         $this->configureDi($di, $config);
         $this->registerAbstractFactory($serviceLocator, $di);
+
+        return $di;
+    }
+
+    /**
+     * @param array $config
+     * @return Di
+     */
+    protected function createDi($config)
+    {
+        $di = new Di();
+
+        if (isset($config['di'])) {
+            $di->configure(new DiConfiguration($config['di']));
+        }
 
         return $di;
     }

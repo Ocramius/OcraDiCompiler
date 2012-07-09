@@ -33,9 +33,10 @@ class ControllerLoaderFactory extends ZendControllerLoaderFactory
                 new AbstractWrappedDiServiceFactory($di, AbstractWrappedDiServiceFactory::USE_SL_BEFORE_DI)
             );
             // @todo is the service initializer really needed? Also, do we compile Di to handle injections this way?
-            $controllerLoader->addInitializer(
-                new DiServiceInitializer($di, $serviceLocator)
-            );
+            // @todo this causes recursions that we cannot really handle
+            //$controllerLoader->addInitializer(
+            //    new DiServiceInitializer($di, $serviceLocator)
+            //);
         }
 
         // @todo these initializer should probably be instantiated in some other factory

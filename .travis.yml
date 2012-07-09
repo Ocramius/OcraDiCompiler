@@ -17,5 +17,5 @@ before_script:
   - cp -r ../OcraDiCompiler vendor/ocramius/ocra-di-compiler
 
 script:
-  - cd vendor/doctrine/DoctrineORMModule/tests
+  - cd vendor/ocramius/ocra-di-compiler/tests
   - phpunit
