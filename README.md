@@ -4,14 +4,13 @@ A compiler module to make `Zend\Di\Di` based applications blazing fast!
 
 ## Requirements
 
- -  [ZendFramework at revision 5b33b815bd58557d35f0aa08f9141f91b4e79f2f](https://github.com/Ocramius/zf2/tree/hotfix/di-code-generator-fixes-rebased),
-    at least until [zendframework/zf2#1517](https://github.com/zendframework/zf2/pull/1517) is merged.
+ -  [ZendFramework 2](https://github.com/zendframework/zf2).
  -  Any application similar to the
     [ZendSkeletonApplication](https://github.com/zendframework/ZendSkeletonApplication).
 
 ## Installation
 
- 1.  Add `"ocramius/OcraDiCompiler": "dev-master"` to your `composer.json`
+ 1.  Add `"ocramius/ocra-di-compiler": "dev-master"` to your `composer.json`
  2.  Run `php composer.phar install`
  3.  Enable the module in your `config/application.config.php` by adding `OcraDiCompiler` to `modules`
 
@@ -40,7 +39,7 @@ class MyClass
 
 following code
 
-```
+```php
 <?php
 $serviceManager->get('Application')->bootstrap();
 $serviceManager->get('Di')->get('MyClass');
@@ -50,5 +49,5 @@ should be noticeably faster (please leave me your feedback and your personal res
 
 ## Credits
 
-Many thanks to [Sasha Oliver Prolic](https://github.com/prolic/), who wrote the implementation of the `DiProxyGenerator`
+Many thanks to [Sascha Oliver Prolic](https://github.com/prolic/), who wrote the implementation of the `DiProxyGenerator`
 and patiently waited for me to get this module implemented
