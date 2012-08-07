@@ -40,4 +40,4 @@ if (!include('vendor/autoload.php')) {
     throw new RuntimeException('vendor/autoload.php could not be found. Did you run php composer.phar install?');
 }
 
-ServiceManagerTestCase::setServiceManagerConfiguration(require 'config/application.config.php');
+ServiceManagerTestCase::setServiceManagerConfig(require 'config/application.config.php');

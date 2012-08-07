@@ -21,7 +21,7 @@ into your `data` directory.
 The compiled Di container will be available after the `bootstrap` event of your application. Before that, any attempt
 to access Di will fetch the default one.
 You can customize where the compiled Di class will be written (and from where it will be read) by overriding the values
-in `config/module.config.php` in your own configuration file in the `config/autoload` directory.
+in `config/module.config.php` in your own config file in the `config/autoload` directory.
 
 ## Performance comparison
 

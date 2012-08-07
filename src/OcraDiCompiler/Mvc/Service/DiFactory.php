@@ -16,18 +16,18 @@
  * and is licensed under the MIT license.
  */
 
-namespace OcraDiCompiler\Service;
+namespace OcraDiCompiler\Mvc\Service;
 
 use Zend\Di\Config as DiConfig;
 use Zend\Di\Di;
 use Zend\Di\Definition\ArrayDefinition;
-use Zend\ServiceManager\Di\DiAbstractServiceFactory;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\ServiceManager\ServiceManager;
-use Zend\Mvc\Service\DiFactory;
+use Zend\ServiceManager\FactoryInterface;
 
 use OcraDiCompiler\Dumper;
 use OcraDiCompiler\Di\CompiledInstantiatorsDi;
+use OcraDiCompiler\ServiceManager\Di\DiAbstractServiceFactory;
 use OcraDiCompiler\Definition\ClassListCompilerDefinition;
 use OcraDiCompiler\Generator\DiInstantiatorCompiler;
 
@@ -42,7 +42,7 @@ use Zend\Code\Generator\FileGenerator;
  *
  * @todo this file is a mess and must be split into definitions compiler/instance compiler and di factory
  */
-class CompiledDiFactory extends DiFactory
+class DiFactory implements FactoryInterface
 {
     /**
      * Generates a compiled Di proxy to be used as a replacement for \Zend\Di\Di
@@ -109,14 +109,10 @@ class CompiledDiFactory extends DiFactory
      * @return void
      */
     protected function registerAbstractFactory(ServiceLocatorInterface $sl, Di $di) {
-        if (!$sl instanceof ServiceManager) {
-            return;
+        if ($sl instanceof ServiceManager) {
+            /* @var $sl ServiceManager */
+            $sl->addAbstractFactory(new DiAbstractServiceFactory($di, DiAbstractServiceFactory::USE_SL_BEFORE_DI));
         }
-
-        /* @var $sl ServiceManager */
-        $sl->addAbstractFactory(
-            new AbstractWrappedDiServiceFactory($di, AbstractWrappedDiServiceFactory::USE_SL_BEFORE_DI)
-        );
     }
 
     /**

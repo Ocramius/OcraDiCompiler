@@ -20,7 +20,7 @@ namespace OcraDiCompilerTest;
 
 use PHPUnit_Framework_TestCase as BaseTest;
 use Zend\Di\Di;
-use Zend\Di\Configuration;
+use Zend\Di\Config;
 use OcraDiCompiler\Dumper;
 
 final class DumperTest extends BaseTest
@@ -28,7 +28,7 @@ final class DumperTest extends BaseTest
     /**
      * @var array
      */
-    protected $diConfigurationArray;
+    protected $diConfigArray;
 
     /**
      * @var Dumper
@@ -41,7 +41,7 @@ final class DumperTest extends BaseTest
     protected function setUp()
     {
         parent::setUp();
-        $this->diConfigurationArray = array(
+        $this->diConfigArray = array(
             'instance' => array(
                 'alias' => array(
                     'a' => __NAMESPACE__ . '\TestAsset\DumperTestDummyInstance',
@@ -73,7 +73,7 @@ final class DumperTest extends BaseTest
     protected function getDumper()
     {
         $di = new Di();
-        $di->configure(new Configuration($this->diConfigurationArray));
+        $di->configure(new Config($this->diConfigArray));
         return new Dumper($di);
     }
 
@@ -225,7 +225,7 @@ final class DumperTest extends BaseTest
     }
 
     /**
-     * Verifies that instances that cannot be built because of missing parameters in configuration will be ignored
+     * Verifies that instances that cannot be built because of missing parameters in config will be ignored
      */
     public function testWillIgnoreInstancesWithMissingParameters()
     {

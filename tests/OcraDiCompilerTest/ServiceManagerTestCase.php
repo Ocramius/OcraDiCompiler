@@ -20,30 +20,30 @@ namespace OcraDiCompilerTest;
 
 use PHPUnit_Framework_TestCase as BaseTestCase;
 use Zend\ServiceManager\ServiceManager;
-use Zend\Mvc\Service\ServiceManagerConfiguration;
+use Zend\Mvc\Service\ServiceManagerConfig;
 
 /**
  * Base test case to be used when a new service manager instance is required
  */
 class ServiceManagerTestCase extends BaseTestCase
 {
-    private static $configuration = array();
+    private static $config = array();
 
-    public static function setServiceManagerConfiguration(array $configuration)
+    public static function setServiceManagerConfig(array $config)
     {
-        static::$configuration = $configuration;
+        static::$config = $config;
     }
 
-    public static function getServiceManagerConfiguration()
+    public static function getServiceManagerConfig()
     {
-        return static::$configuration;
+        return static::$config;
     }
 
-    public function getServiceManager(array $configuration = null)
+    public function getServiceManager(array $config = null)
     {
-        $configuration = $configuration ?: static::getServiceManagerConfiguration();
-        $serviceManager = new ServiceManager(new ServiceManagerConfiguration($configuration));
-        $serviceManager->setService('ApplicationConfiguration', $configuration);
+        $config = $config ?: static::getServiceManagerConfig();
+        $serviceManager = new ServiceManager(new ServiceManagerConfig($config));
+        $serviceManager->setService('ApplicationConfig', $config);
         /* @var $moduleManager \Zend\ModuleManager\ModuleManagerInterface */
         $moduleManager = $serviceManager->get('ModuleManager');
         $moduleManager->loadModules();
