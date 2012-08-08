@@ -33,6 +33,8 @@ use OcraDiCompiler\Generator\DiInstantiatorCompiler;
 
 use Zend\Code\Generator\FileGenerator;
 
+use Zend\Stdlib\ErrorHandler;
+
 /**
  * Factory that is responsible for generating a compiled Di if none found and otherwise
  * instantiate a more performing Di proxy factory
@@ -54,7 +56,9 @@ class DiFactory implements FactoryInterface
     {
         $config = $serviceLocator->get('Config');
 
-        $compiledInstantiators = @include $config['ocra_di_compiler']['compiled_di_instantiator_filename'];
+        ErrorHandler::start();
+        $compiledInstantiators = include $config['ocra_di_compiler']['compiled_di_instantiator_filename'];
+        ErrorHandler::stop();
 
         if (!is_array($compiledInstantiators)) {
             $di = $this->createDi($config);
@@ -121,9 +125,14 @@ class DiFactory implements FactoryInterface
      * @return string
      */
     protected function getDiDefinitions($config, Di $di = null) {
-        if ($arrayDefinitions = @include $config['ocra_di_compiler']['compiled_di_definitions_filename']) {
+        ErrorHandler::start();
+
+        if ($arrayDefinitions = include $config['ocra_di_compiler']['compiled_di_definitions_filename']) {
+            ErrorHandler::stop();
             return $config['ocra_di_compiler']['compiled_di_definitions_filename'];
         }
+
+        ErrorHandler::stop();
 
         if (!$di) {
             $di = new Di();
