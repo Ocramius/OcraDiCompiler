@@ -11,6 +11,8 @@ return array(
         'factories' => array(
             'DependencyInjector'      => 'OcraDiCompiler\\Mvc\\Service\\DiFactory',
             'ControllerLoader'        => 'OcraDiCompiler\\Mvc\\Service\\ControllerLoaderFactory',
+            'ViewHelperManager'       => 'OcraDiCompiler\Mvc\Service\ViewHelperManagerFactory',
+            'ControllerPluginManager' => 'OcraDiCompiler\Mvc\Service\ControllerPluginManagerFactory',
         ),
     ),
 );
