@@ -67,9 +67,10 @@ class DiAbstractServiceFactory extends CompiledInstantiatorsDi implements Abstra
     {
         $this->useServiceLocator = $useServiceLocator;
         // since we are using this in a proxy-fashion, localize state
-        $this->di              = $di;
-        $this->definitions     = $this->di->definitions;
-        $this->instanceManager = $this->di->instanceManager;
+        $this->di                    = $di;
+        $this->definitions           = $this->di->definitions;
+        $this->instanceManager       = $this->di->instanceManager;
+        $this->compiledInstantiators = $this->di->compiledInstantiators;
     }
 
     /**

@@ -44,6 +44,14 @@ class CompiledInstantiatorsDi extends Di
     }
 
     /**
+     * @return \Closure[]
+     */
+    public function getCompiledInstantiators()
+    {
+        return $this->compiledInstantiators;
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function newInstance($name, array $params = array(), $isShared = true)
