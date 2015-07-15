@@ -14,6 +14,12 @@ A compiler module to make `Zend\Di\Di` based applications blazing fast!
  2.  Run `php composer.phar install`
  3.  Enable the module in your `config/application.config.php` by adding `OcraDiCompiler` to `modules`
 
+or
+
+```sh
+php composer.phar ocramius/ocra-di-compiler
+```
+
 ## Functionality
 
 OcraDiCompiler interacts with the bootstrap process of your application by trying to write a compiled `Zend\Di\Di` class
